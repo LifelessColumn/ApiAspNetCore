@@ -17,7 +17,7 @@ namespace DevIO.Api.V1.Controllers
         private readonly IFornecedorRepository _fornecedorRepository;
         private readonly IEnderecoRepository _enderecoRepository;
         private readonly IFornecedorService _fornecedorService;
-        private readonly IMapper _mapper;
+        private readonly IMapper mapper;
 
         public FornecedoresController(IFornecedorRepository fornecedorRepository,
                                       IEnderecoRepository enderecoRepository,
@@ -29,13 +29,13 @@ namespace DevIO.Api.V1.Controllers
             _fornecedorRepository = fornecedorRepository;
             _enderecoRepository = enderecoRepository;
             _fornecedorService = fornecedorService;
-            _mapper = mapper;
+            this.mapper = mapper;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<FornecedorViewModel>>> ObterTodos()
         {
-            var fornecedores = _mapper.Map<IEnumerable<FornecedorViewModel>>(await _fornecedorRepository.ObterTodos());
+            var fornecedores = mapper.Map<IEnumerable<FornecedorViewModel>>(await _fornecedorRepository.ObterTodos());
 
             return Ok(fornecedores);
         }
@@ -56,7 +56,18 @@ namespace DevIO.Api.V1.Controllers
         {
             if (!ModelState.IsValid) return CustomResponse(ModelState);
 
-            await _fornecedorService.Adicionar(_mapper.Map<Fornecedor>(fornecedorViewModel));
+            await _fornecedorService.Adicionar(mapper.Map<Fornecedor>(fornecedorViewModel));
+
+            return CustomResponse(fornecedorViewModel);
+        }
+
+        [ClaimsAuthorize("Fornecedor", "Adicionar")]
+        [HttpPost]
+        public async Task<ActionResult<FornecedorViewModel>> AdicionarDuplicado(FornecedorViewModel fornecedorViewModel)
+        {
+            if (!ModelState.IsValid) return CustomResponse(ModelState);
+
+            await _fornecedorService.AdicionarDuplicado(mapper.Map<Fornecedor>(fornecedorViewModel));
 
             return CustomResponse(fornecedorViewModel);
         }
@@ -69,7 +80,7 @@ namespace DevIO.Api.V1.Controllers
 
             if (!ModelState.IsValid) return CustomResponse(ModelState);
 
-            await _fornecedorService.Atualizar(_mapper.Map<Fornecedor>(fornecedorViewModel));
+            await _fornecedorService.Atualizar(mapper.Map<Fornecedor>(fornecedorViewModel));
 
             return CustomResponse(fornecedorViewModel);
         }
@@ -90,7 +101,7 @@ namespace DevIO.Api.V1.Controllers
         [HttpGet("endereco/{id:guid}")]
         public async Task<ActionResult<EnderecoViewModel>> ObterEnderecoPorId(Guid id)
         {
-            var enderecoViewModel = _mapper.Map<EnderecoViewModel>(await _enderecoRepository.ObterPorId(id));
+            var enderecoViewModel = mapper.Map<EnderecoViewModel>(await _enderecoRepository.ObterPorId(id));
 
             return enderecoViewModel;
         }
@@ -103,19 +114,19 @@ namespace DevIO.Api.V1.Controllers
 
             if (!ModelState.IsValid) return CustomResponse(ModelState);
 
-            await _fornecedorService.AtualizarEndereco(_mapper.Map<Endereco>(enderecoViewModel));
+            await _fornecedorService.AtualizarEndereco(mapper.Map<Endereco>(enderecoViewModel));
 
             return CustomResponse(enderecoViewModel);
         }
 
         private async Task<FornecedorViewModel> ObterFornecedorProdutosEndereco(Guid id)
         {
-            return _mapper.Map<FornecedorViewModel>(await _fornecedorRepository.ObterFornecedorProdutosEndereco(id));
+            return mapper.Map<FornecedorViewModel>(await _fornecedorRepository.ObterFornecedorProdutosEndereco(id));
         }
 
         private async Task<FornecedorViewModel> ObterFornecedorEndereco(Guid id)
         {
-            return _mapper.Map<FornecedorViewModel>(await _fornecedorRepository.ObterFornecedorEndereco(id));
+            return mapper.Map<FornecedorViewModel>(await _fornecedorRepository.ObterFornecedorEndereco(id));
         }
     }
 }
