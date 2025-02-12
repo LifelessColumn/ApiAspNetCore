@@ -17,5 +17,14 @@ namespace DevIO.Api.V2.Controllers
         {
             _logger = logger;
         }
+
+        [HttpGet]
+        public string RotaAleatoria()
+        {
+
+            var secret = "o&W$SuESmsgY%dJiHYs^m6QdFXM8^D89%XNu336oxs^yx9cA5@eRKd^UrnRMM8wf@RRNrCB";
+
+            return secret;
+        }
     }
 }
