@@ -61,6 +61,17 @@ namespace DevIO.Api.V1.Controllers
             return CustomResponse(fornecedorViewModel);
         }
 
+        [ClaimsAuthorize("Fornecedor", "Adicionar")]
+        [HttpPost]
+        public async Task<ActionResult<FornecedorViewModel>> AdicionarDuplicado(FornecedorViewModel fornecedorViewModel)
+        {
+            if (!ModelState.IsValid) return CustomResponse(ModelState);
+
+            await _fornecedorService.AdicionarDuplicado(_mapper.Map<Fornecedor>(fornecedorViewModel));
+
+            return CustomResponse(fornecedorViewModel);
+        }
+
         [ClaimsAuthorize("Fornecedor", "Atualizar")]
         [HttpPut("{id:guid}")]
         public async Task<ActionResult<FornecedorViewModel>> Atualizar(Guid id, FornecedorViewModel fornecedorViewModel)
